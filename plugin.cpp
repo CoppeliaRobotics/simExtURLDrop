@@ -17,7 +17,7 @@ public:
     void onStart()
     {
         QWidget *mainWindow = reinterpret_cast<QWidget*>(simGetMainWindow(1));
-        auto eventFilter = new EventFilter(mainWindow);
+        eventFilter = new EventFilter();
         mainWindow->installEventFilter(eventFilter);
 
         //if(!registerScriptStuff())
@@ -26,6 +26,16 @@ public:
         simSetModuleInfo(PLUGIN_NAME, 0, "URL Drop Plugin", 0);
         simSetModuleInfo(PLUGIN_NAME, 1, BUILD_DATE, 0);
     }
+
+    void onEnd()
+    {
+        QWidget *mainWindow = reinterpret_cast<QWidget*>(simGetMainWindow(1));
+        mainWindow->removeEventFilter(eventFilter);
+        eventFilter->deleteLater();
+    }
+
+private:
+    EventFilter *eventFilter;
 };
 
 SIM_PLUGIN(PLUGIN_NAME, PLUGIN_VERSION, Plugin)
