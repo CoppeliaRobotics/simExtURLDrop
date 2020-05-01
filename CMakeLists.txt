@@ -36,7 +36,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DI
 
 set(SOURCES
     plugin.cpp
-    filedownloader.cpp
     eventfilter.cpp
     ${COPPELIASIM_EXPORTED_SOURCES}
 )

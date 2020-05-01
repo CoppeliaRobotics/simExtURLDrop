@@ -1,5 +1,9 @@
 #include "eventfilter.h"
 
+#include <QByteArray>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 #include <QRegularExpression>
 #include <QDragEnterEvent>
 #include <QDropEvent>
@@ -8,7 +12,6 @@
 #include <QTemporaryFile>
 #include <QMetaEnum>
 
-#include "filedownloader.h"
 #include "simPlusPlus/Plugin.h"
 
 EventFilter::EventFilter(QObject *parent)
@@ -63,11 +66,12 @@ bool EventFilter::eventFilter(QObject *obj, QEvent *event)
                 {
                     url = rewriteURL(url);
                     qDebug() << "downloading" << url;
-                    FileDownloader *fileDownloader = new FileDownloader(url, this);
-                    QObject::connect(fileDownloader, &FileDownloader::downloaded, [=] {
+                    QNetworkAccessManager *nam = new QNetworkAccessManager(this);
+                    QObject::connect(nam, &QNetworkAccessManager::finished, [=] (QNetworkReply *reply) {
                         QTemporaryFile f(QDir::tempPath() + "/CoppeliaSim.XXXXXX." + type);
                         if(f.open()) {
-                            auto data = fileDownloader->downloadedData();
+                            auto data = reply->readAll();
+                            reply->deleteLater();
                             f.write(data);
                             f.close();
                             qDebug() << "downloaded" << data.size() << "bytes" << f.fileName();
@@ -76,9 +80,11 @@ bool EventFilter::eventFilter(QObject *obj, QEvent *event)
                             else if(type == "ttm")
                                 simLoadModel(f.fileName().toLocal8Bit().data());
                         }
-                        fileDownloader->deleteLater();
+                        nam->deleteLater();
                         return true; // eat event
                     });
+                    QNetworkRequest request(url);
+                    nam->get(request);
                 }
             }
         }
