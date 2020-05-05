@@ -1,4 +1,5 @@
 #include "eventfilter.h"
+#include "debug.h"
 
 #include <QByteArray>
 #include <QNetworkAccessManager>
@@ -54,7 +55,7 @@ bool EventFilter::eventFilter(QObject *obj, QEvent *event)
         if(mimeData->hasUrls()) {
             QList<QUrl> urlList = mimeData->urls();
             if(urlList.size() > 1)
-                qWarning() << "Cannot handle multiple URLs";
+                log(sim_verbosity_warnings, "Cannot handle multiple URLs");
             auto url = urlList.at(0);
             if(!url.isLocalFile())
             {
@@ -65,7 +66,7 @@ bool EventFilter::eventFilter(QObject *obj, QEvent *event)
                 if(type == "ttt" || type == "ttm")
                 {
                     url = rewriteURL(url);
-                    qDebug() << "downloading" << url;
+                    log(sim_verbosity_infos, boost::format("downloading %s...") % url.toString().toStdString());
                     QNetworkAccessManager *nam = new QNetworkAccessManager(this);
                     QObject::connect(nam, &QNetworkAccessManager::finished, [=] (QNetworkReply *reply) {
                         QTemporaryFile f(QDir::tempPath() + "/CoppeliaSim.XXXXXX." + type);
@@ -74,7 +75,7 @@ bool EventFilter::eventFilter(QObject *obj, QEvent *event)
                             reply->deleteLater();
                             f.write(data);
                             f.close();
-                            qDebug() << "downloaded" << data.size() << "bytes" << f.fileName();
+                            log(sim_verbosity_infos, boost::format("downloaded %d bytes %s") % data.size() % f.fileName().toStdString());
                             if(type == "ttt")
                                 simLoadScene(f.fileName().toLocal8Bit().data());
                             else if(type == "ttm")

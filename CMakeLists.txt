@@ -37,6 +37,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DI
 set(SOURCES
     plugin.cpp
     eventfilter.cpp
+    debug.cpp
     ${COPPELIASIM_EXPORTED_SOURCES}
 )
 
