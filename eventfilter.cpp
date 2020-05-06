@@ -1,5 +1,5 @@
 #include "eventfilter.h"
-#include "debug.h"
+#include "stubs.h"
 
 #include <QByteArray>
 #include <QNetworkAccessManager>

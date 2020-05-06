@@ -5,7 +5,7 @@
 #include <vector>
 #include "simPlusPlus/Plugin.h"
 #include "plugin.h"
-//#include "stubs.h"
+#include "stubs.h"
 #include "config.h"
 
 #include "eventfilter.h"
@@ -20,8 +20,8 @@ public:
         eventFilter = new EventFilter();
         mainWindow->installEventFilter(eventFilter);
 
-        //if(!registerScriptStuff())
-        //    throw std::runtime_error("failed to register script stuff");
+        if(!registerScriptStuff())
+            throw std::runtime_error("failed to register script stuff");
 
         setExtVersion("URL Drop Plugin");
         setBuildDate(BUILD_DATE);
