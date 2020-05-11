@@ -68,14 +68,19 @@ bool EventFilter::eventFilter(QObject *obj, QEvent *event)
                     url = rewriteURL(url);
                     log(sim_verbosity_infos, boost::format("downloading %s...") % url.toString().toStdString());
                     QNetworkAccessManager *nam = new QNetworkAccessManager(this);
-                    QObject::connect(nam, &QNetworkAccessManager::finished, [=] (QNetworkReply *reply) {
+                    QNetworkRequest request(url);
+                    QNetworkReply *reply = nam->get(request);
+                    QObject::connect(reply, &QNetworkReply::downloadProgress, [=] (qint64 bytesReceived, qint64 bytesTotal) {
+                        log(sim_verbosity_infos, boost::format("%s: downloaded %d bytes out of %d") % fileName.toStdString() % bytesReceived % bytesTotal);
+                    });
+                    QObject::connect(reply, &QNetworkReply::finished, [=] {
                         QTemporaryFile f(QDir::tempPath() + "/CoppeliaSim.XXXXXX." + type);
                         if(f.open()) {
                             auto data = reply->readAll();
                             reply->deleteLater();
                             f.write(data);
                             f.close();
-                            log(sim_verbosity_infos, boost::format("downloaded %d bytes %s") % data.size() % f.fileName().toStdString());
+                            log(sim_verbosity_infos, boost::format("%s: finished downloading %d bytes") % fileName.toStdString() % data.size());
                             if(type == "ttt")
                                 simLoadScene(f.fileName().toLocal8Bit().data());
                             else if(type == "ttm")
@@ -84,8 +89,9 @@ bool EventFilter::eventFilter(QObject *obj, QEvent *event)
                         nam->deleteLater();
                         return true; // eat event
                     });
-                    QNetworkRequest request(url);
-                    nam->get(request);
+                    QObject::connect(reply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), [=] (QNetworkReply::NetworkError code) {
+                        log(sim_verbosity_errors, boost::format("%s: download failed: %s") % fileName.toStdString() % reply->errorString().toStdString());
+                    });
                 }
             }
         }
