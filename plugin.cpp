@@ -17,7 +17,7 @@ public:
     void onStart()
     {
         QWidget *mainWindow = reinterpret_cast<QWidget*>(simGetMainWindow(1));
-        eventFilter = new EventFilter();
+        eventFilter = new EventFilter(mainWindow, nullptr);
         mainWindow->installEventFilter(eventFilter);
 
         if(!registerScriptStuff())

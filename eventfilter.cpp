@@ -15,9 +15,14 @@
 
 #include "simPlusPlus/Plugin.h"
 
-EventFilter::EventFilter(QObject *parent)
-	: QObject(parent)
+EventFilter::EventFilter(QWidget *mainWin, QObject *parent)
+	: QObject(parent),
+      mainWindow(mainWin)
 {
+    progressDialog = new QProgressDialog(mainWindow);
+    progressDialog->setMinimumWidth(400);
+    progressDialog->setMinimumDuration(500);
+    progressDialog->setCancelButton(nullptr);
 }
 
 EventFilter::~EventFilter()
@@ -70,10 +75,16 @@ bool EventFilter::eventFilter(QObject *obj, QEvent *event)
                     QNetworkAccessManager *nam = new QNetworkAccessManager(this);
                     QNetworkRequest request(url);
                     QNetworkReply *reply = nam->get(request);
+                    progressDialog->setValue(0);
+                    progressDialog->setLabelText(QStringLiteral("Downloading %1...").arg(fileName));
+                    progressDialog->show();
                     QObject::connect(reply, &QNetworkReply::downloadProgress, [=] (qint64 bytesReceived, qint64 bytesTotal) {
                         log(sim_verbosity_infos, boost::format("%s: downloaded %d bytes out of %d") % fileName.toStdString() % bytesReceived % bytesTotal);
+                        progressDialog->setMaximum(bytesTotal);
+                        progressDialog->setValue(bytesReceived);
                     });
                     QObject::connect(reply, &QNetworkReply::finished, [=] {
+                        progressDialog->reset();
                         QTemporaryFile f(QDir::tempPath() + "/CoppeliaSim.XXXXXX." + type);
                         if(f.open()) {
                             auto data = reply->readAll();
@@ -90,6 +101,7 @@ bool EventFilter::eventFilter(QObject *obj, QEvent *event)
                         return true; // eat event
                     });
                     QObject::connect(reply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), [=] (QNetworkReply::NetworkError code) {
+                        progressDialog->reset();
                         log(sim_verbosity_errors, boost::format("%s: download failed: %s") % fileName.toStdString() % reply->errorString().toStdString());
                     });
                 }
