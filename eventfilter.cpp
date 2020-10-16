@@ -56,7 +56,7 @@ bool EventFilter::eventFilter(QObject *obj, QEvent *event)
         if(mimeData->hasUrls()) {
             QList<QUrl> urlList = mimeData->urls();
             if(urlList.size() > 1)
-                log(sim_verbosity_warnings, "Cannot handle multiple URLs");
+                sim::addLog(sim_verbosity_warnings, "Cannot handle multiple URLs");
             auto url = urlList.at(0);
             if(!url.isLocalFile())
             {
@@ -67,7 +67,7 @@ bool EventFilter::eventFilter(QObject *obj, QEvent *event)
                 if(type == "ttt" || type == "ttm")
                 {
                     url = rewriteURL(url);
-                    log(sim_verbosity_infos, boost::format("downloading %s...") % url.toString().toStdString());
+                    sim::addLog(sim_verbosity_infos, "downloading %s...", url.toString().toStdString());
                     QNetworkAccessManager *nam = new QNetworkAccessManager(this);
                     QNetworkRequest request(url);
                     QNetworkReply *reply = nam->get(request);
@@ -78,7 +78,7 @@ bool EventFilter::eventFilter(QObject *obj, QEvent *event)
                     progressDialog->setValue(0);
                     progressDialog->show();
                     QObject::connect(reply, &QNetworkReply::downloadProgress, [=] (qint64 bytesReceived, qint64 bytesTotal) {
-                        log(sim_verbosity_infos, boost::format("%s: downloaded %d bytes out of %d") % fileName.toStdString() % bytesReceived % bytesTotal);
+                        sim::addLog(sim_verbosity_infos, "%s: downloaded %d bytes out of %d", fileName.toStdString(), bytesReceived % bytesTotal);
                         progressDialog->setMaximum(bytesTotal);
                         progressDialog->setValue(bytesReceived);
                     });
@@ -90,7 +90,7 @@ bool EventFilter::eventFilter(QObject *obj, QEvent *event)
                             reply->deleteLater();
                             f.write(data);
                             f.close();
-                            log(sim_verbosity_infos, boost::format("%s: finished downloading %d bytes") % fileName.toStdString() % data.size());
+                            sim::addLog(sim_verbosity_infos, "%s: finished downloading %d bytes", fileName.toStdString(), data.size());
                             if(type == "ttt")
                                 simLoadScene(f.fileName().toLocal8Bit().data());
                             else if(type == "ttm")
@@ -100,7 +100,7 @@ bool EventFilter::eventFilter(QObject *obj, QEvent *event)
                     });
                     QObject::connect(reply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), [=] (QNetworkReply::NetworkError code) {
                         progressDialog->deleteLater();
-                        log(sim_verbosity_errors, boost::format("%s: download failed: %s") % fileName.toStdString() % reply->errorString().toStdString());
+                        sim::addLog(sim_verbosity_errors, "%s: download failed: %s", fileName.toStdString(), reply->errorString().toStdString());
                         simAddStatusbarMessage(reply->errorString().toStdString().c_str());
                         nam->deleteLater();
                     });
