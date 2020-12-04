@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <?xml-stylesheet type="text/xsl" href="callbacks.xsl"?>
 
-<plugin name="URLDrop" short-name="URLDrop" author="federico.ferri.it@gmail.com">
+<plugin name="URLDrop" author="federico.ferri.it@gmail.com">
     <description>Plugin for opening scene/models from URLs</description>
 </plugin>
