@@ -100,8 +100,7 @@ bool EventFilter::eventFilter(QObject *obj, QEvent *event)
                     });
                     QObject::connect(reply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), [=] (QNetworkReply::NetworkError code) {
                         progressDialog->deleteLater();
-                        sim::addLog(sim_verbosity_errors, "%s: download failed: %s", fileName.toStdString(), reply->errorString().toStdString());
-                        simAddStatusbarMessage(reply->errorString().toStdString().c_str());
+                        sim::addLog(sim_verbosity_scripterrors, "%s: download failed: %s", fileName.toStdString(), reply->errorString().toStdString());
                         nam->deleteLater();
                     });
                     return true; // eat event

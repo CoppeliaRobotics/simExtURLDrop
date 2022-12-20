@@ -16,7 +16,7 @@ class Plugin : public sim::Plugin
 public:
     void onStart()
     {
-        if (simGetBooleanParameter(sim_boolparam_headless)>0)
+        if (simGetBoolParam(sim_boolparam_headless)>0)
             throw std::runtime_error("cannot start in headless mode");
 
         QWidget *mainWindow = reinterpret_cast<QWidget*>(simGetMainWindow(1));
