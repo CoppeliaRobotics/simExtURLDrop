@@ -11,6 +11,7 @@
 #include "eventfilter.h"
 #include <QString>
 #include <QWidget>
+#include <QDir>
 #include <QSettings>
 #include <QProcess>
 #include <QUrl>
@@ -56,8 +57,25 @@ public:
         p.setArguments(args);
         p.startDetached();
 #elif __APPLE__
+        QSettings launchServ(QDir::homePath() + "/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist", QSettings::NativeFormat);
+        int size = launchServ.beginReadArray("LSHandlers");
+        QString browserID = "com.apple.safari";
+        for(int i = 0; i < size; ++i)
+        {
+            launchServ.setArrayIndex(i);
+            QString contentType = launchServ.value("LSHandlerContentType").toString();
+            QString urlScheme = launchServ.value("LSHandlerURLScheme").toString();
+            QString handler = launchServ.value("LSHandlerRoleAll").toString();
+            if(contentType == "public.html" || urlScheme == "http")
+                browserID = handler;
+        }
+        launchServ.endArray();
+        QString app = "Safari";
+        if(browserID == "com.apple.safari") app = "Safari";
+        else if(browserID == "com.google.chrome") app = "Google Chrome";
+        else if(browserID == "org.mozilla.firefox") app = "Firefox";
         QStringList args;
-        args << "-l" << "AppleScript" << "-e" << QStringLiteral("tell application \"%1\" to open location \"%2\" & activate application \"%1\"").arg("Safari").arg(url);
+        args << "-l" << "AppleScript" << "-e" << QStringLiteral("tell application \"%1\" to open location \"%2\" & activate application \"%1\"").arg(app).arg(url);
         QProcess p;
         p.start("/usr/bin/osascript", args);
         p.waitForFinished();
