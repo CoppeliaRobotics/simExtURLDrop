@@ -3,4 +3,12 @@
 
 <plugin name="URLDrop" author="federico.ferri.it@gmail.com">
     <description>Plugin for opening scene/models from URLs</description>
+    <command name="openURL">
+        <description>Opens a URL using the system's default browser.</description>
+        <params>
+            <param name="url" type="string"/>
+        </params>
+        <return>
+        </return>
+    </command>
 </plugin>
