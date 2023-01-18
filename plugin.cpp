@@ -13,10 +13,12 @@
 #include <QWidget>
 #ifdef _WIN32
 #include <QSettings>
+#elif __APPLE__
+#include <QProcess>
 #else
 #include <QUrl>
 #include <QDesktopServices>
-#endif // _WIN32
+#endif
 
 class Plugin : public sim::Plugin
 {
@@ -46,11 +48,11 @@ public:
 
     void openURL(openURL_in *in, openURL_out *out)
     {
+        QString url = QString::fromStdString(in->url);
 #ifdef _WIN32
         QSettings httpSetting("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\http\\UserChoice", QSettings::Registry64Format);
         QString progId(httpSetting.value("ProgId").toString());
         QSettings openCmd(QStringLiteral("HKEY_CLASSES_ROOT\\%1\\shell\\open\\command").arg(progId), QSettings::Registry64Format);
-        QString url(QString::fromStdString(in->url));
         QString cmd(openCmd.value("Default").toString().arg(url));
         STARTUPINFO si;
         PROCESS_INFORMATION pi;
@@ -59,9 +61,14 @@ public:
         ::ZeroMemory(&pi, sizeof(pi));
         QByteArray cmdba = cmd.toLocal8Bit();
         ::CreateProcess(NULL, cmdba.data(), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+#elif __APPLE__
+        QStringList args;
+        args << "-l" << "AppleScript" << "-e" << QStringLiteral("tell application \"%1\" to open location \"%2\" & activate application \"%1\"").arg("Safari").arg(url);
+        QProcess p;
+        p.start("/usr/bin/osascript", args);
+        p.waitForFinished();
 #else
-        QUrl url = QUrl(QString::fromStdString(in->url));
-        QDesktopServices::openUrl(url);
+        QDesktopServices::openUrl(QUrl(url));
 #endif
     }
 
