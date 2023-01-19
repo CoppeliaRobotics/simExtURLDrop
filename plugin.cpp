@@ -1,8 +1,3 @@
-#include <map>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <vector>
 #include "simPlusPlus/Plugin.h"
 #include "config.h"
 #include "plugin.h"
@@ -58,18 +53,17 @@ public:
         p.startDetached();
 #elif __APPLE__
         QSettings launchServ(QDir::homePath() + "/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist", QSettings::NativeFormat);
-        int size = launchServ.beginReadArray("LSHandlers");
+        QVariantList handlers = launchServ.value("LSHandlers").toList();
         QString browserID = "com.apple.safari";
-        for(int i = 0; i < size; ++i)
+        for(int i = 0; i < handlers.size(); ++i)
         {
-            launchServ.setArrayIndex(i);
-            QString contentType = launchServ.value("LSHandlerContentType").toString();
-            QString urlScheme = launchServ.value("LSHandlerURLScheme").toString();
-            QString handler = launchServ.value("LSHandlerRoleAll").toString();
+            QVariantMap handlerObj = handlers.at(i).toMap();
+            QString handler = handlerObj.value("LSHandlerRoleAll").toString();
+            QString contentType = handlerObj.value("LSHandlerContentType").toString();
+            QString urlScheme = handlerObj.value("LSHandlerURLScheme").toString();
             if(contentType == "public.html" || urlScheme == "http")
                 browserID = handler;
         }
-        launchServ.endArray();
         QString app = "Safari";
         if(browserID == "com.apple.safari") app = "Safari";
         else if(browserID == "com.google.chrome") app = "Google Chrome";
