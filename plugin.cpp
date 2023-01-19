@@ -52,22 +52,26 @@ public:
         p.setArguments(args);
         p.startDetached();
 #elif __APPLE__
-        QSettings launchServ(QDir::homePath() + "/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist", QSettings::NativeFormat);
-        QVariantList handlers = launchServ.value("LSHandlers").toList();
-        QString browserID = "com.apple.safari";
-        for(int i = 0; i < handlers.size(); ++i)
-        {
-            QVariantMap handlerObj = handlers.at(i).toMap();
-            QString handler = handlerObj.value("LSHandlerRoleAll").toString();
-            QString contentType = handlerObj.value("LSHandlerContentType").toString();
-            QString urlScheme = handlerObj.value("LSHandlerURLScheme").toString();
-            if(contentType == "public.html" || urlScheme == "http")
-                browserID = handler;
-        }
         QString app = "Safari";
-        if(browserID == "com.apple.safari") app = "Safari";
-        else if(browserID == "com.google.chrome") app = "Google Chrome";
-        else if(browserID == "org.mozilla.firefox") app = "Firefox";
+        auto useDefaultBrowser = sim::getNamedBoolParam("simURLDrop.useDefaultBrowser");
+        if(!useDefaultBrowser || *useDefaultBrowser)
+        {
+            QSettings launchServ(QDir::homePath() + "/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist", QSettings::NativeFormat);
+            QVariantList handlers = launchServ.value("LSHandlers").toList();
+            QString browserID = "com.apple.safari";
+            for(int i = 0; i < handlers.size(); ++i)
+            {
+                QVariantMap handlerObj = handlers.at(i).toMap();
+                QString handler = handlerObj.value("LSHandlerRoleAll").toString();
+                QString contentType = handlerObj.value("LSHandlerContentType").toString();
+                QString urlScheme = handlerObj.value("LSHandlerURLScheme").toString();
+                if(contentType == "public.html" || urlScheme == "http")
+                    browserID = handler;
+            }
+            if(browserID == "com.apple.safari") app = "Safari";
+            else if(browserID == "com.google.chrome") app = "Google Chrome";
+            else if(browserID == "org.mozilla.firefox") app = "Firefox";
+        }
         QStringList args;
         args << "-l" << "AppleScript" << "-e" << QStringLiteral("tell application \"%1\" to open location \"%2\" & activate application \"%1\"").arg(app).arg(url);
         QProcess p;
