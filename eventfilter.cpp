@@ -92,9 +92,9 @@ bool EventFilter::eventFilter(QObject *obj, QEvent *event)
                             f.close();
                             sim::addLog(sim_verbosity_infos, "%s: finished downloading %d bytes", fileName.toStdString(), data.size());
                             if(type == "ttt")
-                                simLoadScene(f.fileName().toLocal8Bit().data());
+                                sim::loadScene(f.fileName().toStdString());
                             else if(type == "ttm")
-                                simLoadModel(f.fileName().toLocal8Bit().data());
+                                sim::loadModel(f.fileName().toStdString());
                         }
                         nam->deleteLater();
                     });

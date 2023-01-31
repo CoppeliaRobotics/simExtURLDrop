@@ -17,10 +17,10 @@ class Plugin : public sim::Plugin
 public:
     void onStart()
     {
-        if (simGetBoolParam(sim_boolparam_headless)>0)
+        if(sim::getBoolParam(sim_boolparam_headless))
             throw std::runtime_error("cannot start in headless mode");
 
-        QWidget *mainWindow = reinterpret_cast<QWidget*>(simGetMainWindow(1));
+        QWidget *mainWindow = reinterpret_cast<QWidget*>(sim::getMainWindow(1));
         eventFilter = new EventFilter(mainWindow, nullptr);
         mainWindow->installEventFilter(eventFilter);
 
@@ -33,7 +33,7 @@ public:
 
     void onEnd()
     {
-        QWidget *mainWindow = reinterpret_cast<QWidget*>(simGetMainWindow(1));
+        QWidget *mainWindow = reinterpret_cast<QWidget*>(sim::getMainWindow(1));
         mainWindow->removeEventFilter(eventFilter);
         eventFilter->deleteLater();
     }
