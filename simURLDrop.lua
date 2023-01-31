@@ -1,3 +1,3 @@
-local simGLTF={}
+local simURLDrop={}
 
-return simGLTF
+return simURLDrop
