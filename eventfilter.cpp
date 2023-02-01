@@ -78,7 +78,7 @@ bool EventFilter::eventFilter(QObject *obj, QEvent *event)
                     progressDialog->setValue(0);
                     progressDialog->show();
                     QObject::connect(reply, &QNetworkReply::downloadProgress, [=] (qint64 bytesReceived, qint64 bytesTotal) {
-                        sim::addLog(sim_verbosity_infos, "%s: downloaded %d bytes out of %d", fileName.toStdString(), bytesReceived % bytesTotal);
+                        sim::addLog(sim_verbosity_infos, "%s: downloaded %d bytes out of %d", fileName.toStdString(), bytesReceived, bytesTotal);
                         progressDialog->setMaximum(bytesTotal);
                         progressDialog->setValue(bytesReceived);
                     });
