@@ -13,7 +13,7 @@
 #include <QTemporaryFile>
 #include <QMetaEnum>
 
-#include "simPlusPlus/Plugin.h"
+#include <simPlusPlus/Plugin.h>
 
 EventFilter::EventFilter(QWidget *mainWin, QObject *parent)
 	: QObject(parent),
