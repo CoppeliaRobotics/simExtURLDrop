@@ -15,14 +15,10 @@
 class Plugin : public sim::Plugin
 {
 public:
-    void onStart()
+    void onInit()
     {
         if(sim::getBoolParam(sim_boolparam_headless))
             throw std::runtime_error("cannot start in headless mode");
-
-        QWidget *mainWindow = reinterpret_cast<QWidget*>(sim::getMainWindow(1));
-        eventFilter = new EventFilter(mainWindow, nullptr);
-        mainWindow->installEventFilter(eventFilter);
 
         if(!registerScriptStuff())
             throw std::runtime_error("failed to register script stuff");
@@ -31,7 +27,14 @@ public:
         setBuildDate(BUILD_DATE);
     }
 
-    void onEnd()
+    void onUIInit()
+    {
+        QWidget *mainWindow = reinterpret_cast<QWidget*>(sim::getMainWindow(1));
+        eventFilter = new EventFilter(mainWindow, nullptr);
+        mainWindow->installEventFilter(eventFilter);
+    }
+
+    void onUICleanup()
     {
         QWidget *mainWindow = reinterpret_cast<QWidget*>(sim::getMainWindow(1));
         mainWindow->removeEventFilter(eventFilter);
@@ -86,5 +89,5 @@ private:
     EventFilter *eventFilter;
 };
 
-SIM_PLUGIN(PLUGIN_NAME, PLUGIN_VERSION, Plugin)
+SIM_UI_PLUGIN(PLUGIN_NAME, PLUGIN_VERSION, Plugin)
 #include "stubsPlusPlus.cpp"

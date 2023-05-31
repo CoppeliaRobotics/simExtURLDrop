@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.11)
-project(simExtURLDrop)
+project(simURLDrop)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -26,5 +26,5 @@ coppeliasim_generate_stubs(${CMAKE_CURRENT_BINARY_DIR}/generated XML_FILE ${CMAK
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
-coppeliasim_add_plugin(simExtURLDrop SOURCES plugin.cpp eventfilter.cpp)
-target_link_libraries(simExtURLDrop Qt5::Core Qt5::Gui Qt5::Widgets Qt5::PrintSupport Qt5::Network)
+coppeliasim_add_plugin(simURLDrop SOURCES plugin.cpp eventfilter.cpp)
+target_link_libraries(simURLDrop Qt5::Core Qt5::Gui Qt5::Widgets Qt5::PrintSupport Qt5::Network)
