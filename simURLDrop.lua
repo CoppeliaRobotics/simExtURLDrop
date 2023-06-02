@@ -1,5 +1,5 @@
-local simURLDrop=loadPlugin'simURLDrop'
+local simURLDrop=loadPlugin'simURLDrop';
 
-(require'simURLDrop-typecheck')(simURLDrop)
+;(require'simURLDrop-typecheck')(simURLDrop)
 
 return simURLDrop
