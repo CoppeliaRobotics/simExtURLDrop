@@ -89,5 +89,5 @@ private:
     EventFilter *eventFilter;
 };
 
-SIM_UI_PLUGIN(PLUGIN_NAME, PLUGIN_VERSION, Plugin)
+SIM_UI_PLUGIN(Plugin)
 #include "stubsPlusPlus.cpp"
