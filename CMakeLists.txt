@@ -16,7 +16,7 @@ if(NOT COPPELIASIM_INCLUDE_DIR)
 endif()
 list(APPEND CMAKE_MODULE_PATH
     ${COPPELIASIM_INCLUDE_DIR}/cmake)
-find_package(CoppeliaSim 4.5.0.0 REQUIRED)
+find_package(CoppeliaSim 4.5.1.7 REQUIRED)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/generated)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external)
