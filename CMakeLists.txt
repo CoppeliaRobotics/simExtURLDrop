@@ -26,5 +26,6 @@ coppeliasim_generate_stubs(${CMAKE_CURRENT_BINARY_DIR}/generated XML_FILE ${CMAK
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
-coppeliasim_add_plugin(simURLDrop SOURCES plugin.cpp eventfilter.cpp)
+coppeliasim_add_plugin(simURLDrop SOURCES plugin.cpp)
 target_link_libraries(simURLDrop Qt5::Core Qt5::Gui Qt5::Widgets Qt5::PrintSupport Qt5::Network)
+coppeliasim_add_addon("simAddOnURL drop service.lua")

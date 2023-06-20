@@ -11,4 +11,13 @@
         <return>
         </return>
     </command>
+    <command name="getURL">
+        <description>Fetch a URL contents.</description>
+        <params>
+            <param name="url" type="string"/>
+        </params>
+        <return>
+            <param name="data" type="string"/>
+        </return>
+    </command>
 </plugin>

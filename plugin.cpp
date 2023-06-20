@@ -3,7 +3,6 @@
 #include "plugin.h"
 #include "stubs.h"
 
-#include "eventfilter.h"
 #include <QString>
 #include <QWidget>
 #include <QDir>
@@ -11,34 +10,21 @@
 #include <QProcess>
 #include <QUrl>
 #include <QDesktopServices>
+#include <QEventLoop>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 
 class Plugin : public sim::Plugin
 {
 public:
     void onInit()
     {
-        if(sim::getBoolParam(sim_boolparam_headless))
-            throw std::runtime_error("cannot start in headless mode");
-
         if(!registerScriptStuff())
             throw std::runtime_error("failed to register script stuff");
 
         setExtVersion("URL Drop Plugin");
         setBuildDate(BUILD_DATE);
-    }
-
-    void onUIInit()
-    {
-        QWidget *mainWindow = reinterpret_cast<QWidget*>(sim::getMainWindow(1));
-        eventFilter = new EventFilter(mainWindow, nullptr);
-        mainWindow->installEventFilter(eventFilter);
-    }
-
-    void onUICleanup()
-    {
-        QWidget *mainWindow = reinterpret_cast<QWidget*>(sim::getMainWindow(1));
-        mainWindow->removeEventFilter(eventFilter);
-        eventFilter->deleteLater();
     }
 
     void openURL(openURL_in *in, openURL_out *out)
@@ -85,9 +71,31 @@ public:
 #endif
     }
 
-private:
-    EventFilter *eventFilter;
+    void getURL(getURL_in *in, getURL_out *out)
+    {
+        QEventLoop loop;
+        QByteArray data;
+        sim::addLog(sim_verbosity_infos, "downloading %s...", in->url);
+        QNetworkAccessManager nam;
+        QString url(QString::fromStdString(in->url));
+        QNetworkRequest request(url);
+        QNetworkReply *reply = nam.get(request);
+        QObject::connect(reply, &QNetworkReply::downloadProgress, [=] (qint64 bytesReceived, qint64 bytesTotal) {
+            sim::addLog(sim_verbosity_infos, "%s: downloaded %d bytes out of %d", in->url, bytesReceived, bytesTotal);
+        });
+        QObject::connect(reply, &QNetworkReply::finished, [&] {
+            data = reply->readAll();
+            reply->deleteLater();
+            sim::addLog(sim_verbosity_infos, "%s: finished downloading %d bytes", in->url, data.size());
+            loop.quit();
+        });
+        QObject::connect(reply, &QNetworkReply::errorOccurred, [&] (QNetworkReply::NetworkError code) {
+            sim::addLog(sim_verbosity_scripterrors, "%s: download failed: %s", in->url, reply->errorString().toStdString());
+            loop.quit();
+        });
+        loop.exec();
+    }
 };
 
-SIM_UI_PLUGIN(Plugin)
+SIM_PLUGIN(Plugin)
 #include "stubsPlusPlus.cpp"
