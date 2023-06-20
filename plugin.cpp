@@ -74,26 +74,30 @@ public:
     void getURL(getURL_in *in, getURL_out *out)
     {
         QEventLoop loop;
-        QByteArray data;
         sim::addLog(sim_verbosity_infos, "downloading %s...", in->url);
         QNetworkAccessManager nam;
         QString url(QString::fromStdString(in->url));
         QNetworkRequest request(url);
         QNetworkReply *reply = nam.get(request);
+        std::string errorMsg;
         QObject::connect(reply, &QNetworkReply::downloadProgress, [=] (qint64 bytesReceived, qint64 bytesTotal) {
             sim::addLog(sim_verbosity_infos, "%s: downloaded %d bytes out of %d", in->url, bytesReceived, bytesTotal);
         });
         QObject::connect(reply, &QNetworkReply::finished, [&] {
-            data = reply->readAll();
+            QByteArray data = reply->readAll();
+            out->data = std::string(data.constData(), data.length());
             reply->deleteLater();
             sim::addLog(sim_verbosity_infos, "%s: finished downloading %d bytes", in->url, data.size());
             loop.quit();
         });
         QObject::connect(reply, &QNetworkReply::errorOccurred, [&] (QNetworkReply::NetworkError code) {
             sim::addLog(sim_verbosity_scripterrors, "%s: download failed: %s", in->url, reply->errorString().toStdString());
+            errorMsg = sim::util::sprintf("download failed: %s", reply->errorString().toStdString());
             loop.quit();
         });
         loop.exec();
+        if(!errorMsg.empty())
+            throw std::runtime_error(errorMsg);
     }
 };
 
