@@ -90,11 +90,10 @@ public:
             {
             case simurldrop_download_mode_file:
                 {
-                    std::string path = sim::getStringParam(sim_stringparam_tempdir);
                     QUrl url(QString::fromStdString(in->url));
                     QFileInfo fileInfo(url.path());
-                    path += "/" + fileInfo.fileName().toStdString();
-                    QFile file(QString(path.c_str()));
+                    std::string path = sim::getStringParam(sim_stringparam_tempdir) + "/" + fileInfo.fileName().toStdString();
+                    QFile file(QString::fromStdString(path));
                     if(file.open(QIODevice::WriteOnly))
                     {
                         qint64 bytesWritten = file.write(data);
