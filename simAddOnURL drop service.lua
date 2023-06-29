@@ -20,7 +20,7 @@ function sysCall_msg(event)
         for _,t in ipairs(ts) do
             t=simURLDrop.rewriteURL(t)
             if string.startswith(t,'http://') or string.startswith(t,'https://') then
-                local file=simURLDrop.getURLFile(t)
+                local file=simURLDrop.getURL(t,simURLDrop.download_mode.file)
                 if string.endswith(t,'.ttm') or string.endswith(t,'.simmodel.xml') then
                     loadModel(file)
                 elseif string.endswith(t,'.ttt') or string.endswith(t,'.simscene.xml') then

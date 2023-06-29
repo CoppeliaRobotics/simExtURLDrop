@@ -15,18 +15,14 @@
         <description>Fetches the content of a URL.</description>
         <params>
             <param name="url" type="string"/>
+            <param name="mode" type="int" default="simurldrop_download_mode_buffer" />
         </params>
         <return>
-            <param name="data" type="string"/>
+            <param name="dataOrFilename" type="string"/>
         </return>
     </command>
-    <command name="getURLFile">
-        <description>Fetches the content of a URL, saves it locally, and returns the path to the file.</description>
-        <params>
-            <param name="url" type="string"/>
-        </params>
-        <return>
-            <param name="path" type="string"/>
-        </return>
-    </command>
+    <enum name="download_mode" item-prefix="download_mode_" base="1355">
+        <item name="file" />
+        <item name="buffer" />
+    </enum>
 </plugin>
