@@ -12,12 +12,21 @@
         </return>
     </command>
     <command name="getURL">
-        <description>Fetch a URL contents.</description>
+        <description>Fetches the content of a URL.</description>
         <params>
             <param name="url" type="string"/>
         </params>
         <return>
             <param name="data" type="string"/>
+        </return>
+    </command>
+    <command name="getURLFile">
+        <description>Fetches the content of a URL, saves it locally, and returns the path to the file.</description>
+        <params>
+            <param name="url" type="string"/>
+        </params>
+        <return>
+            <param name="path" type="string"/>
         </return>
     </command>
 </plugin>
