@@ -9,12 +9,11 @@ function sysCall_addOnScriptSuspend()
 end
 
 function sysCall_init()
-    simURLDrop=require'simURLDrop'
-    simAssimp=require'simAssimp'
 end
 
 function sysCall_msg(event)
     if event.id=='dragDropEvent' then
+        simURLDrop=require'simURLDrop'
         local ts=string.split(event.data.mimeText,'\n')
         local impFiles=''
         for _,t in ipairs(ts) do
@@ -54,6 +53,7 @@ function sysCall_msg(event)
             end
         end
         if #impFiles>0 then
+            simAssimp=require'simAssimp'
             pcall(simAssimp.importShapesDlg,impFiles)
         end
     end
