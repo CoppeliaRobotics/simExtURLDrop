@@ -5,7 +5,10 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MACOSX_RPATH 1)
 
-find_package(Qt5 COMPONENTS Core Gui Widgets PrintSupport Network REQUIRED)
+set(Qt Qt5 CACHE STRING "Qt version to use (e.g. Qt5)")
+set_property(CACHE Qt PROPERTY STRINGS Qt5 Qt6)
+
+find_package(${Qt} COMPONENTS Core Gui Widgets PrintSupport Network REQUIRED)
 
 if(NOT COPPELIASIM_INCLUDE_DIR)
     if(DEFINED ENV{COPPELIASIM_ROOT_DIR})
@@ -27,5 +30,5 @@ coppeliasim_generate_stubs(${CMAKE_CURRENT_BINARY_DIR}/generated XML_FILE ${CMAK
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 coppeliasim_add_plugin(simURLDrop SOURCES plugin.cpp)
-target_link_libraries(simURLDrop Qt5::Core Qt5::Gui Qt5::Widgets Qt5::PrintSupport Qt5::Network)
+target_link_libraries(simURLDrop ${Qt}::Core ${Qt}::Gui ${Qt}::Widgets ${Qt}::PrintSupport ${Qt}::Network)
 coppeliasim_add_addon("simAddOnURL drop service.lua")
