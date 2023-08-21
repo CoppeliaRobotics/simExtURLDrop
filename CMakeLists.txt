@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.16.3)
 project(simURLDrop)
 
 set(CMAKE_AUTOMOC ON)
@@ -30,5 +30,12 @@ coppeliasim_generate_stubs(${CMAKE_CURRENT_BINARY_DIR}/generated XML_FILE ${CMAK
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 coppeliasim_add_plugin(simURLDrop SOURCES plugin.cpp)
-target_link_libraries(simURLDrop ${Qt}::Core ${Qt}::Gui ${Qt}::Widgets ${Qt}::PrintSupport ${Qt}::Network)
+target_link_libraries(simURLDrop
+    PRIVATE
+    ${Qt}::Core
+    ${Qt}::Gui
+    ${Qt}::Widgets
+    ${Qt}::PrintSupport
+    ${Qt}::Network
+)
 coppeliasim_add_addon("simAddOnURL drop service.lua")
