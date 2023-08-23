@@ -32,10 +32,10 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DI
 coppeliasim_add_plugin(simURLDrop SOURCES plugin.cpp)
 target_link_libraries(simURLDrop
     PRIVATE
-    ${Qt}::Core
-    ${Qt}::Gui
-    ${Qt}::Widgets
-    ${Qt}::PrintSupport
-    ${Qt}::Network
+    Qt::Core
+    Qt::Gui
+    Qt::Widgets
+    Qt::PrintSupport
+    Qt::Network
 )
 coppeliasim_add_addon("simAddOnURL drop service.lua")
