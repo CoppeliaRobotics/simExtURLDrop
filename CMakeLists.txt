@@ -38,4 +38,4 @@ target_link_libraries(simURLDrop
     Qt::PrintSupport
     Qt::Network
 )
-coppeliasim_add_addon("URL drop service.lua")
+coppeliasim_add_addon("addOns/URL drop service.lua")
